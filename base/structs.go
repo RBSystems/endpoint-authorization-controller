@@ -37,12 +37,13 @@ type CommonInfo struct {
 
 //PermissionsRecord represents a permissions object stored in the databse
 type PermissionsRecord struct {
-	ID           string                   `json:"_id"`
-	Leaf         bool                     `json:"leaf"`
-	ResourceType string                   `json:"resource-type"`
-	Allow        map[string]PermissionSet `json:"allow"`
-	Deny         map[string]PermissionSet `json:"deny"`
-	SubResources []string                 `json:"-"` //this is for use when the resource requested doesn't correspond to a leaf node - this is all the 'leaves' that are connected to the node requested.
+	ID            string                   `json:"_id"`
+	ResourceType  string                   `json:"resource-type"`
+	Allow         map[string]PermissionSet `json:"allow"`
+	Deny          map[string]PermissionSet `json:"deny"`
+	ResourceList  ResourceList             `json:"resource-list"`  //this is used in teh top level '*' document
+	ResourceTiers int                      `json:"resource-tiers"` //this is used in the top level '*' document
+	SubResources  []string                 `json:"-"`              //this is for use when the resource requested doesn't correspond to a leaf node - this is all the 'leaves' that are connected to the node requested.
 }
 
 //PermissionSet represents roles granted/denied to specific groups within a permissions record
@@ -50,4 +51,10 @@ type PermissionSet struct {
 	Roles []string `json:"roles"`         //roles
 	TTL   *int     `json:"TTL,omitempty"` //The amount of time to grant the selected permission set for, may be left blank to just set to the default
 	//We can add other attributes here like 'ID card', 'schedule' etc. etc.
+}
+
+// ResourceList .
+type ResourceList struct {
+	Type    string `json:"type"`
+	Address string `json:"addr"`
 }
