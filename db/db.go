@@ -11,6 +11,7 @@ import (
 //AuthDB .
 type AuthDB interface {
 	GetPermissionRecords(reqType, reqID string) (map[string]base.PermissionsRecord, *nerr.E)
+	GetKeyRecord(KeyID string) (base.KeyRecord, *nerr.E)
 }
 
 var authDBs map[string]AuthDB
@@ -34,4 +35,9 @@ func GetAuthDB(t string) AuthDB {
 func GetPermissionRecords(reqType, reqID string) (map[string]base.PermissionsRecord, *nerr.E) {
 
 	return GetAuthDB("couch").GetPermissionRecords(reqType, reqID)
+}
+
+//GetKeyRecord .
+func GetKeyRecord(Key string) (base.KeyRecord, *nerr.E) {
+	return GetAuthDB("couch").GetKeyRecord(reqType, reqID)
 }

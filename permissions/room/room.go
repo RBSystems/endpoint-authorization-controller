@@ -13,7 +13,7 @@ import (
 
 //CalculateRoomPermissions given the request with the 'room' resource type - calculate the permissions allowed.
 //We assume that the Access Key associated with the request has already been validated.
-func CalculateRoomPermissions(req base.UserInformation) (base.Response, *nerr.E) {
+func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) (base.Response, *nerr.E) {
 	toReturn := base.Response{
 		CommonInfo: req.CommonInfo,
 	}
@@ -25,10 +25,18 @@ func CalculateRoomPermissions(req base.UserInformation) (base.Response, *nerr.E)
 		return toReturn, nerr.Create(fmt.Sprintf("Invalid request type. Must be %v", base.Room), "invalid-type")
 	}
 
-	//we need to get the list of groups for the user
-	groups, err := users.GetGroupsForUser(req.ID)
-	if err != nil {
-		return toReturn, err.Addf("Couldn't calcualte room permissions for %v", req.ResourceID)
+	groups := map[string]bool{}
+	var err *nerr.E
+	if req.ID == "service" {
+		for i := range servicegroups {
+			groups[servicegroups[i]] = true
+		}
+	} else {
+		//we need to get the list of groups for the user
+		groups, err = users.GetGroupsForUser(req.ID)
+		if err != nil {
+			return toReturn, err.Addf("Couldn't calcualte room permissions for %v", req.ResourceID)
+		}
 	}
 
 	//we need to get the list of permissions associated with the type and id

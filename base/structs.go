@@ -60,3 +60,15 @@ type ResourceList struct {
 	Pass    string `json:"pass"`
 	User    string `json:"user"`
 }
+
+//KeyRecord .
+type KeyRecord struct {
+	ID  string `json:"_id"`
+	Rev string `json:"_rev"`
+
+	Key      string    `json:"key"`
+	Valid    bool      `json:"valid"`
+	LastUsed time.Time `json:"last-used,omitempty"`
+	Service  bool      `json:"service"`
+	Roles    []string  `json:"roles,omitempty"`
+}
