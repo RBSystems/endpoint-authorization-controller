@@ -10,6 +10,14 @@ type bulkDocRetrievalResponse struct {
 	} `json:"rows"`
 }
 
+type bulkKeyRetrievalResponse struct {
+	Rows []struct {
+		ID  string         `json:"id"`
+		Key string         `json:"key"`
+		Doc base.KeyRecord `json:"doc"`
+	} `json:"rows"`
+}
+
 type bulkDocRetrievalRequest struct {
 	Keys  []string `json:"keys,omitempty"`
 	Limit int      `json:"limit,omitempty"`
