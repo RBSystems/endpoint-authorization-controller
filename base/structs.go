@@ -57,4 +57,6 @@ type PermissionSet struct {
 type ResourceList struct {
 	Type    string `json:"type"`
 	Address string `json:"addr"`
+	Pass    string `json:"pass"`
+	User    string `json:"user"`
 }

@@ -1,10 +1,30 @@
 package main
 
-import "github.com/byuoitav/common"
+import (
+	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/endpoint-authorization-controller/base"
+	"github.com/byuoitav/endpoint-authorization-controller/permissions/room"
+)
 
 func main() {
-	port := ":7200"
-	router := common.NewRouter()
+	//port := ":7200"
+	//router := common.NewRouter()
+	log.SetLevel("debug")
 
-	router.Start(port)
+	req := base.UserInformation{
+		ResourceID: "JFSB",
+		CommonInfo: base.CommonInfo{
+			ID:           "service",
+			AuthMethod:   "CAS",
+			ResourceType: "room",
+		}}
+
+	perms, err := room.CalculateRoomPermissions(req)
+	if err != nil {
+		log.L.Errorf("%v", err.Error())
+		log.L.Infof("%s", err.Stack)
+	}
+	log.L.Infof("%+v", perms)
+
+	//router.Start(port)
 }

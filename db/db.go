@@ -20,7 +20,7 @@ var once sync.Once
 func GetAuthDB(t string) AuthDB {
 	once.Do(func() {
 		authDBs = map[string]AuthDB{
-			"couch": couch.GetDB(),
+			couch.COUCH: couch.GetDB(),
 		}
 	})
 

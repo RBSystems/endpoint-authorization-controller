@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/endpoint-authorization-controller/base"
 	"github.com/byuoitav/endpoint-authorization-controller/db"
@@ -37,6 +38,7 @@ func CalculateRoomPermissions(req base.UserInformation) (base.Response, *nerr.E)
 	}
 
 	curTTL := 0
+	log.L.Debugf("%v", records["*"])
 
 	//start at the 'all' level and look at the permissions denoted there
 	if v, ok := records["*"]; ok {
@@ -58,6 +60,7 @@ func CalculateRoomPermissions(req base.UserInformation) (base.Response, *nerr.E)
 			}
 		}
 	}
+	log.L.Debugf("Permissions at %v level done. %v records added", "*", len(toReturn.Permissions))
 
 	toReturn, err = GetPermissionsForSubResources(records, "*", roles, groups, curTTL)
 	if err != nil {
@@ -74,6 +77,7 @@ func GetPermissionsForSubResources(records map[string]base.PermissionsRecord, cu
 	}
 
 	roles := map[string]bool{}
+	//log.L.Debugf("Getting roles for subresource %v, adding %v parent roles.", currentResource, len(parentRoles))
 
 	//inherit the allow permissions
 	for k, v := range parentRoles {
@@ -87,6 +91,12 @@ func GetPermissionsForSubResources(records map[string]base.PermissionsRecord, cu
 	if ok {
 		//do our Deny first, since we can reverse this later with the allows
 		for k, j := range v.Deny {
+			if k == "*" {
+				//just wipe the permissions
+				roles = map[string]bool{}
+				break
+			}
+
 			if _, ok := groups[k]; ok {
 
 				//set the TTL
@@ -123,6 +133,7 @@ func GetPermissionsForSubResources(records map[string]base.PermissionsRecord, cu
 
 	//it's a leaf node
 	if !ok || len(records[currentResource].SubResources) < 1 {
+		log.L.Debugf("building record for leaf node: %v", currentResource)
 		for k, v := range roles {
 			if v {
 				toReturn.Permissions[currentResource] = append(toReturn.Permissions[currentResource], k)
@@ -132,6 +143,7 @@ func GetPermissionsForSubResources(records map[string]base.PermissionsRecord, cu
 		return toReturn, nil
 	}
 
+	log.L.Debugf("building record for subresources of %v", currentResource)
 	//recurse
 	for _, v := range records[currentResource].SubResources {
 
