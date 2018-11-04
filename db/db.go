@@ -39,5 +39,5 @@ func GetPermissionRecords(reqType, reqID string) (map[string]base.PermissionsRec
 
 //GetKeyRecord .
 func GetKeyRecord(Key string) (base.KeyRecord, *nerr.E) {
-	return GetAuthDB("couch").GetKeyRecord(reqType, reqID)
+	return GetAuthDB("couch").GetKeyRecord(Key)
 }

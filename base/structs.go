@@ -8,6 +8,12 @@ const (
 	Room = "room"
 )
 
+//Other constants
+const (
+	//a service user
+	SERVICEUSER = "service-user"
+)
+
 //Request represents a request sent into the authorization controller
 type Request struct {
 	AccessKey       string          `json:"access-key"`       //The access key granted to the service making the call
@@ -70,5 +76,5 @@ type KeyRecord struct {
 	Valid    bool      `json:"valid"`
 	LastUsed time.Time `json:"last-used,omitempty"`
 	Service  bool      `json:"service"`
-	Roles    []string  `json:"roles,omitempty"`
+	Groups   []string  `json:"groups,omitempty"`
 }

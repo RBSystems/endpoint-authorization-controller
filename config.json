@@ -1,0 +1,13 @@
+{
+    "name": "endpoint-authorization-controller",
+    "port": ":7200",
+    "env-vars": [
+        "LDAP_SEARCH_SCOPE",
+        "DB_USERNAME",
+        "LDAP_URL",
+        "DB_ADDRESS",
+        "LDAP_USERNAME",
+        "DB_PASSWORD",
+        "LDAP_PASSWORD"
+    ]
+}

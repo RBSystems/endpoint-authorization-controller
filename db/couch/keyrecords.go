@@ -5,17 +5,17 @@ import (
 	"fmt"
 
 	"github.com/byuoitav/common/db"
-	c "github.com/byuoitav/common/db/couch"
+	comDB "github.com/byuoitav/common/db/couch"
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/endpoint-authorization-controller/base"
 )
 
 //GetKeyRecord .
-func GetKeyRecord(key string) (base.KeyRecord, *nerr.E) {
+func (c *AuthDB) GetKeyRecord(key string) (base.KeyRecord, *nerr.E) {
 	toReturn := base.KeyRecord{}
 
-	d, ok := db.GetDB().(*c.CouchDB)
+	d, ok := db.GetDB().(*comDB.CouchDB)
 	if !ok {
 		return toReturn, nerr.Create("No couch database configured", "bad-config")
 	}

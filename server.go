@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/endpoint-authorization-controller/base"
-	"github.com/byuoitav/endpoint-authorization-controller/permissions/room"
+	"github.com/byuoitav/endpoint-authorization-controller/permissions"
 )
 
 func main() {
@@ -19,7 +19,10 @@ func main() {
 			ResourceType: "room",
 		}}
 
-	perms, err := room.CalculateRoomPermissions(req)
+	perms, err := permissions.GetAuthorization(base.Request{
+		UserInformation: req,
+		AccessKey:       "Ginger",
+	})
 	if err != nil {
 		log.L.Errorf("%v", err.Error())
 		log.L.Infof("%s", err.Stack)
