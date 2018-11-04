@@ -8,6 +8,12 @@ const (
 	Room = "room"
 )
 
+//Other constants
+const (
+	//a service user
+	SERVICEUSER = "service-user"
+)
+
 //Request represents a request sent into the authorization controller
 type Request struct {
 	AccessKey       string          `json:"access-key"`       //The access key granted to the service making the call
@@ -57,4 +63,18 @@ type PermissionSet struct {
 type ResourceList struct {
 	Type    string `json:"type"`
 	Address string `json:"addr"`
+	Pass    string `json:"pass"`
+	User    string `json:"user"`
+}
+
+//KeyRecord .
+type KeyRecord struct {
+	ID  string `json:"_id"`
+	Rev string `json:"_rev"`
+
+	Key      string    `json:"key"`
+	Valid    bool      `json:"valid"`
+	LastUsed time.Time `json:"last-used,omitempty"`
+	Service  bool      `json:"service"`
+	Groups   []string  `json:"groups,omitempty"`
 }
