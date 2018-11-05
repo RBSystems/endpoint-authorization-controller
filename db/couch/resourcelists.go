@@ -113,6 +113,7 @@ func getCreds(rlist base.ResourceList) (pass string, user string) {
 	} else {
 		user = rlist.User
 	}
+	log.L.Infof("%v, %v", user, pass)
 
 	return
 }

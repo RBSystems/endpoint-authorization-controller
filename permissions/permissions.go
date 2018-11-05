@@ -3,6 +3,7 @@ package permissions
 import (
 	"fmt"
 
+	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/endpoint-authorization-controller/base"
 	"github.com/byuoitav/endpoint-authorization-controller/db"
@@ -27,8 +28,8 @@ func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
 		return toReturn, nerr.Create(fmt.Sprintf("API key is invalid"), "invalid-key")
 	}
 
+	log.L.Infof("userID: %v", req.UserInformation.ID)
 	var groups []string
-
 	if req.UserInformation.ID == base.SERVICEUSER {
 		if keyrec.Service {
 			//we get the permissions based on the gruops defined on the service

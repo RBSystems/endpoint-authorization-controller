@@ -11,7 +11,7 @@ const (
 //Other constants
 const (
 	//a service user
-	SERVICEUSER = "service-user"
+	SERVICEUSER = "service"
 )
 
 //Request represents a request sent into the authorization controller
