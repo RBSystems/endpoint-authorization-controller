@@ -42,6 +42,7 @@ func (a *AuthDB) GetPermissionRecords(reqType, reqID string) (map[string]base.Pe
 	//check to see if I'm requesting all docs
 	if reqID == "*" {
 		//get everything
+		//TODO: Support * requests
 
 	} else {
 		req := bulkDocRetrievalRequest{}
