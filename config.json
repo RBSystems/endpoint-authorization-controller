@@ -8,6 +8,9 @@
         "DB_ADDRESS",
         "LDAP_USERNAME",
         "DB_PASSWORD",
-        "LDAP_PASSWORD"
+        "LDAP_PASSWORD",
+        "COUCH_ADDR",
+        "COUCH_USER",
+        "COUCH_PASS"
     ]
 }
