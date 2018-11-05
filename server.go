@@ -27,7 +27,7 @@ func authorize(ctx echo.Context) error {
 	err := ctx.Bind(&req)
 	if err != nil {
 		log.L.Warnf("Bad request payload: %v", err.Error())
-		return ctx.String(http.StatusBadRequest, "Bad reuqest payload, must be auth request")
+		return ctx.String(http.StatusBadRequest, "Bad request payload, must be auth request")
 	}
 
 	perms, er := permissions.GetAuthorization(req)

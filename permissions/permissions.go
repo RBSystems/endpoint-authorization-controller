@@ -48,12 +48,13 @@ func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
 	//add permission types here
 	switch req.UserInformation.ResourceType {
 	case base.Room:
-		perms, err := room.CalculateRoomPermissions(req.UserInformation, groups)
+		toReturn, err := room.CalculateRoomPermissions(req.UserInformation, groups)
 		if err != nil {
 			return toReturn, err.Addf("Couldn't generate authorizations")
 		}
-		return perms, nil
+		return toReturn, nil
 	}
+	log.L.Debugf("%v", toReturn.ID)
 
 	return toReturn, nil
 }

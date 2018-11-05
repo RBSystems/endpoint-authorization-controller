@@ -45,8 +45,10 @@ func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) 
 			if _, ok := groups[k]; ok {
 
 				//set the TTL
+				log.L.Debugf("TTL: %v", j.TTL)
 				if j.TTL != nil {
 					if curTTL == 0 || curTTL > *j.TTL {
+						log.L.Debugf("Setting TTL: %v", curTTL)
 						curTTL = *j.TTL
 					}
 				}
@@ -59,11 +61,14 @@ func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) 
 		}
 	}
 	log.L.Debugf("Permissions at %v level done. %v records added", "*", len(toReturn.Permissions))
+	log.L.Debugf("CurrentTTL: %v", curTTL)
 
-	toReturn, err = GetPermissionsForSubResources(records, "*", roles, groups, curTTL)
+	new, err := GetPermissionsForSubResources(records, "*", roles, groups, curTTL)
 	if err != nil {
 		return toReturn, err.Addf("Couldn't Build permission set for resource: %v and user %v", req.ResourceID, req.ID)
 	}
+	toReturn.Permissions = new.Permissions
+	toReturn.TTL = new.TTL
 
 	return toReturn, nil
 }
@@ -160,5 +165,7 @@ func GetPermissionsForSubResources(records map[string]base.PermissionsRecord, cu
 			toReturn.Permissions[k] = v
 		}
 	}
+
+	toReturn.TTL = nowTTL
 	return toReturn, nil
 }
