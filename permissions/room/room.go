@@ -63,6 +63,10 @@ func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) 
 	log.L.Debugf("Permissions at %v level done. %v records added", "*", len(toReturn.Permissions))
 	log.L.Debugf("CurrentTTL: %v", curTTL)
 
+	for k, v := range records {
+		log.L.Debugf("%v: %v", k, v)
+	}
+
 	new, err := GetPermissionsForSubResources(records, "*", roles, groups, curTTL)
 	if err != nil {
 		return toReturn, err.Addf("Couldn't Build permission set for resource: %v and user %v", req.ResourceID, req.ID)

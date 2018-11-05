@@ -97,11 +97,10 @@ func (a *AuthDB) GetPermissionRecords(reqType, reqID string) (map[string]base.Pe
 		log.L.Debugf("Adding subresources %v to the starrec", toReturn["*"].SubResources)
 		//we need to add the subrecord from the star record
 
-		for i := 0; i < len(parts); i++ {
+		log.L.Debugf("%v", parts)
+		for i := 1; i < len(parts); i++ {
 			var next string
-			if i != len(parts)-1 {
-				next = cur + "-" + parts[i]
-			}
+			next = cur + "-" + parts[i]
 
 			_, currec := getDocument(resp, cur)
 			if len(next) > 0 {
