@@ -13,7 +13,6 @@ import (
 func main() {
 	port := ":7200"
 	router := common.NewRouter()
-	//	log.SetLevel("debug")
 
 	router.POST("/authorize", authorize)
 
