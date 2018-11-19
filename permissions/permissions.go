@@ -16,8 +16,8 @@ import (
 
 // Authentication method constants
 const (
-	WSO2            = "WSO2"
-	CAS             = "CAS"
+	WSO2            = "wso2"
+	CAS             = "cas"
 	Application     = "APPLICATION"
 	ApplicationUser = "APPLICATION_USER"
 )
