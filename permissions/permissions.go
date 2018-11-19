@@ -3,6 +3,8 @@ package permissions
 import (
 	"fmt"
 
+	"github.com/dgrijalva/jwt-go"
+
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/endpoint-authorization-controller/base"
@@ -69,11 +71,13 @@ const (
 
 //GetAuthorization .
 func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
-	var groups *[]string
+	var groups []string
+
+	log.L.Infof("getting permissions for %s with %s", req.UserInformation.ID, req.UserInformation.ResourceID)
 
 	switch req.UserInformation.AuthMethod {
 	case WSO2:
-		ok, ne := getWSO2Authorization(req, *groups)
+		ok, ne := getWSO2Authorization(req, &groups)
 		if ne != nil {
 			log.L.Errorf("something went wrong : %s", ne.String())
 			return base.Response{}, nil
@@ -83,7 +87,7 @@ func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
 			return base.Response{}, nil
 		}
 	case CAS:
-		ok, ne := getCASAuthorization(req, *groups)
+		ok, ne := getCASAuthorization(req, groups)
 		if ne != nil {
 			log.L.Errorf("something went wrong : %s", ne.String())
 			return base.Response{}, nil
@@ -102,7 +106,7 @@ func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
 
 	switch req.UserInformation.ResourceType {
 	case base.Room:
-		toReturn, err := room.CalculateRoomPermissions(req.UserInformation, *groups)
+		toReturn, err := room.CalculateRoomPermissions(req.UserInformation, groups)
 		if err != nil {
 			return toReturn, err.Addf("Couldn't generate authorizations")
 		}
@@ -143,7 +147,7 @@ func getCASAuthorization(req base.Request, groups []string) (bool, *nerr.E) {
 	return true, nil
 }
 
-func getWSO2Authorization(req base.Request, groups []string) (bool, *nerr.E) {
+func getWSO2Authorization(req base.Request, groups *[]string) (bool, *nerr.E) {
 	// check if the token is valid
 	ok, token, err := Validate(string(req.UserInformation.Data))
 	if err != nil {
@@ -154,8 +158,14 @@ func getWSO2Authorization(req base.Request, groups []string) (bool, *nerr.E) {
 		return false, nil
 	}
 
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		log.L.Error("failed to case to MapClaims")
+	}
+
+	log.L.Debug(claims)
 	// get the username out of the JWT
-	req.AccessKey = token.Header["client_byu_id"].(string)
+	req.AccessKey = claims["http://byu.edu/claims/client_byu_id"].(string)
 
 	//check the API key
 	keyrec, ne := db.GetAuthDB(couch.COUCH).GetKeyRecord(req.AccessKey)
@@ -163,24 +173,24 @@ func getWSO2Authorization(req base.Request, groups []string) (bool, *nerr.E) {
 		return false, ne.Addf("Couldn't authorize api key")
 	}
 
-	if !keyrec.Valid {
+	if !keyrec.Valid || !keyrec.HasAuthMethod(req.UserInformation.AuthMethod) {
 		return false, nerr.Create(fmt.Sprintf("API key is invalid"), "invalid-key")
 	}
 
 	// get the usertype
-	usertype := token.Header["http://wso2.org/claims/usertype"].(string)
+	usertype := claims["http://wso2.org/claims/usertype"].(string)
 
 	if usertype == Application {
 		if keyrec.Service {
 			//we get the permissions based on the gruops defined on the service
-			groups = keyrec.Groups
+			*groups = keyrec.Groups
 		} else {
 			return false, nerr.Create(fmt.Sprintf("API Key not valid for service user."), "bad-user")
 		}
 	} else if usertype == ApplicationUser {
-		req.UserInformation.ID = token.Header["http://byu.edu/claims/resourceowner_net_id"].(string)
+		req.UserInformation.ID = claims["http://byu.edu/claims/resourceowner_net_id"].(string)
 
-		groups, ne = users.GetGroupsForUser(req.UserInformation.ID, users.LDAP)
+		*groups, ne = users.GetGroupsForUser(req.UserInformation.ID, users.LDAP)
 		if ne != nil {
 			return false, ne.Addf("Couldn't generate authorizations")
 		}

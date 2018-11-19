@@ -72,9 +72,19 @@ type KeyRecord struct {
 	ID  string `json:"_id"`
 	Rev string `json:"_rev"`
 
-	Key      string    `json:"key"`
-	Valid    bool      `json:"valid"`
-	LastUsed time.Time `json:"last-used,omitempty"`
-	Service  bool      `json:"service"`
-	Groups   []string  `json:"groups,omitempty"`
+	Key                string    `json:"key"`
+	Valid              bool      `json:"Valid"`
+	LastUsed           time.Time `json:"last-used,omitempty"`
+	Service            bool      `json:"Service"`
+	Groups             []string  `json:"Groups,omitempty"`
+	AllowedAuthMethods []string  `json:"AllowedAuthMethods,omitempty"`
+}
+
+func (kr *KeyRecord) HasAuthMethod(method string) bool {
+	for _, m := range kr.AllowedAuthMethods {
+		if m == method {
+			return true
+		}
+	}
+	return false
 }

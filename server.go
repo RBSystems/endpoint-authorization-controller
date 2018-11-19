@@ -20,6 +20,7 @@ func main() {
 }
 
 func authorize(ctx echo.Context) error {
+	log.L.Debug("received authorization request")
 	req := base.Request{}
 
 	//we need to get the body out
