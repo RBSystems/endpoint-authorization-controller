@@ -106,17 +106,13 @@ func GetAuthorization(req base.Request) (base.Response, *nerr.E) {
 		CommonInfo: req.UserInformation.CommonInfo,
 	}
 
-	switch req.UserInformation.ResourceType {
-	case base.Room:
-		toReturn, err := room.CalculateRoomPermissions(req.UserInformation, groups)
-		if err != nil {
-			return toReturn, err.Addf("Couldn't generate authorizations")
-		}
-		return toReturn, nil
+	toReturn, err := room.CalculateResourcePermissions(req.UserInformation, groups)
+	if err != nil {
+		return toReturn, err.Addf("Couldn't generate authorizations")
 	}
-	log.L.Debugf("ID: %v", toReturn.ID)
-
+	log.L.Debugf("toReturn: %v", toReturn)
 	return toReturn, nil
+
 }
 
 func getCASAuthorization(req base.Request) (bool, []string, *nerr.E) {

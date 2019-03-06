@@ -1,7 +1,6 @@
 package room
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/byuoitav/common/log"
@@ -12,27 +11,30 @@ import (
 
 //CalculateRoomPermissions given the request with the 'room' resource type - calculate the permissions allowed.
 //We assume that the Access Key associated with the request has already been validated.
-func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) (base.Response, *nerr.E) {
+func CalculateResourcePermissions(req base.UserInformation, servicegroups []string) (base.Response, *nerr.E) {
 	toReturn := base.Response{
 		CommonInfo: req.CommonInfo,
 	}
 
 	//set of roles
 	roles := map[string]bool{}
-
-	if req.ResourceType != base.Room {
-		return toReturn, nerr.Create(fmt.Sprintf("Invalid request type. Must be %v", base.Room), "invalid-type")
-	}
+	/*
+		if req.ResourceType != base.Room {
+			return toReturn, nerr.Create(fmt.Sprintf("Invalid request type. Must be %v", base.Room), "invalid-type")
+		}
+	*/
 
 	groups := map[string]bool{}
 	for k := range servicegroups {
+		log.L.Debugf("adding group %v", servicegroups[k])
 		groups[servicegroups[k]] = true
 	}
 
 	//we need to get the list of permissions associated with the type and id
 	records, err := db.GetPermissionRecords(req.ResourceType, req.ResourceID)
 	if err != nil {
-		return toReturn, err.Addf("Couldn't calcualte room permissions for %v", req.ResourceID)
+		log.L.Error("Problem getting permissions records: %v", err.Error())
+		return toReturn, err.Addf("Couldn't calcualte permissions for %v", req.ResourceID)
 	}
 
 	curTTL := 0
@@ -42,7 +44,9 @@ func CalculateRoomPermissions(req base.UserInformation, servicegroups []string) 
 	if v, ok := records["*"]; ok {
 
 		for k, j := range v.Allow {
+			log.L.Debugf("Checking group %v", k)
 			if _, ok := groups[k]; ok {
+				log.L.Debugf("Group %v passed", k)
 
 				//set the TTL
 				log.L.Debugf("TTL: %v", j.TTL)
